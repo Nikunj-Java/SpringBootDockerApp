@@ -1,28 +1,29 @@
 def containerName="springbootdocker"
 def tag="latest"
-def dockerHubUser="anujsharma1990"
-def gitURL="https://github.com/anujdevopslearn/SpringBootDocker.git"
+def dockerHubUser="nikunj0510"
+def gitURL="https://github.com/Nikunj-Java/SpringBootDockerApp.git"
 
 node {
 	 
-   stage('Build'){
+    stage('Checkout Source Code') {
+        checkout scm
+    }
+
+    stage('Build'){
         sh "mvn clean install"
     }
-  
-   stage('Checkout Source Code') {
-    checkout scm
+
+    stage('Create Docker Image') {
+        docker.build("SpringBootAPP:${env.BUILD_NUMBER}")
+        echo "Image build complete"
     }
-
-  stage('Create Docker Image') {
-    docker.build("$containerName:${env.BUILD_NUMBER}")
-  }
-
-  stage ('Run Application') {
+      
+    stage ('Run Application') {
     try {
       // Stop existing Container
-      sh 'docker rm $containerName -f'
+      sh 'docker rm docker_container -f'
       // Start database container here
-      sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
+      sh "docker run -d --name docker_container SpringBootAPP:${env.BUILD_NUMBER}"
     } 
 	catch (error) {
     } finally {
@@ -30,8 +31,4 @@ node {
       
     }
   }
-
-     
-	
- 
 }
