@@ -1,13 +1,12 @@
 node {
   
-  stage('Build'){
-        sh "mvn clean install"
-    }
   stage('Checkout Source Code') {
     checkout scm
   }
 
-  
+  stage('Create Docker Image') {
+    docker.build("docker_image:${env.BUILD_NUMBER}")
+  }
 
   stage ('Run Application') {
     try {
@@ -25,9 +24,3 @@ node {
   
    
  }
-
-
-
-
-
-  
