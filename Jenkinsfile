@@ -1,15 +1,14 @@
-def containerName="springbootdocker"
-def tag="latest"
-def dockerHubUser="nikunj0510"
-def gitURL="https://github.com/Nikunj-Java/SpringBootDockerApp.git"
-
 node {
-	def sonarscanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-    stage('Checkout') {
-        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: gitURL]]]
-    }
+  
+  stage('Checkout Source Code') {
+    checkout scm
+  }
 
-    stage('Build'){
+  stage('Create Docker Image') {
+    docker.build("docker_image:${env.BUILD_NUMBER}")
+  }
+
+  stage('Build'){
         sh "mvn clean install"
     }
 
@@ -30,14 +29,26 @@ node {
             echo "Image push complete"
         }
     }
-	
-	stage("SonarQube Scan"){
-        withSonarQubeEnv(credentialsId: 'SonarQubeToken') {
-			sh "${sonarscanner}/bin/sonar-scanner"
-		}
+
+  stage ('Run Application') {
+    try {
+      // Stop existing Container
+      sh 'docker rm docker_container -f'
+      // Start database container here
+      sh "docker run -d --name docker_container docker_image:${env.BUILD_NUMBER}"
+    } 
+	catch (error) {
+    } finally {
+      // Stop and remove database container here
+      
     }
-	
-	stage("Ansible Deploy"){
-        ansiblePlaybook inventory: 'hosts', playbook: 'deploy.yaml'
-    }
-}
+  }
+  
+   
+ }
+
+
+
+
+
+  
