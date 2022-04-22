@@ -1,26 +1,43 @@
+def containerName="springbootdocker"
+def tag="latest"
+def dockerHubUser="anujsharma1990"
+def gitURL="https://github.com/anujdevopslearn/SpringBootDocker.git"
+
 node {
-  
-  stage('Checkout Source Code') {
-    checkout scm
-  }
-
-  stage('Create Docker Image') {
-    docker.build("docker_image:${env.BUILD_NUMBER}")
-  }
-
-  stage ('Run Application') {
-    try {
-      // Stop existing Container
-      sh 'docker rm docker_container -f'
-      // Start database container here
-      sh "docker run -d --name docker_container docker_image:${env.BUILD_NUMBER}"
-    } 
-	catch (error) {
-    } finally {
-      // Stop and remove database container here
-      
+	def sonarscanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+    stage('Checkout') {
+        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: gitURL]]]
     }
-  }
-  
-   
- }
+
+    stage('Build'){
+        sh "mvn clean install"
+    }
+
+    stage("Image Prune"){
+         sh "docker image prune -f"
+    }
+
+    stage('Image Build'){
+        sh "docker build -t $containerName:$tag --pull --no-cache ."
+        echo "Image build complete"
+    }
+
+    stage('Push to Docker Registry'){
+        withCredentials([usernamePassword(credentialsId: 'dockerHubAccount', usernameVariable: 'dockerUser', passwordVariable: 'dockerPassword')]) {
+            sh "docker login -u $dockerUser -p $dockerPassword"
+            sh "docker tag $containerName:$tag $dockerUser/$containerName:$tag"
+            sh "docker push $dockerUser/$containerName:$tag"
+            echo "Image push complete"
+        }
+    }
+	
+	stage("SonarQube Scan"){
+        withSonarQubeEnv(credentialsId: 'SonarQubeToken') {
+			sh "${sonarscanner}/bin/sonar-scanner"
+		}
+    }
+	
+	stage("Ansible Deploy"){
+        ansiblePlaybook inventory: 'hosts', playbook: 'deploy.yaml'
+    }
+}
