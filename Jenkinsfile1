@@ -10,7 +10,7 @@ node {
     checkout scm
   }
 
-     stage('Build'){
+    stage('Build'){
         sh "mvn clean install"
     }
 
@@ -23,7 +23,21 @@ node {
         echo "Image build complete"
     }
 
+    
 
+  stage ('Run Application') {
+    try {
+      // Stop existing Container
+      //sh 'docker rm $containerName -f'
+      // Start database container here
+      sh "docker run -d --name $containerName docker_image:${env.BUILD_NUMBER}"
+    } 
+	catch (error) {
+    } finally {
+      // Stop and remove database container here
+      
+    }
+  }
 
      
 	
