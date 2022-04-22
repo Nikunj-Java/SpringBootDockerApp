@@ -23,16 +23,14 @@ node {
         echo "Image build complete"
     }
 
-    stage('Create Docker Image') {
-    docker.build("docker_image:${env.BUILD_NUMBER}")
-  }
+    
 
   stage ('Run Application') {
     try {
       // Stop existing Container
-      sh 'docker rm docker_container -f'
+      sh 'docker rm $containerName -f'
       // Start database container here
-      sh "docker run -d --name docker_container docker_image:${env.BUILD_NUMBER}"
+      sh "docker run -d --name $containerName docker_image:${env.BUILD_NUMBER}"
     } 
 	catch (error) {
     } finally {
