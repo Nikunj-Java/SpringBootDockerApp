@@ -18,7 +18,7 @@ node {
     }
 
     stage('Image Build'){
-        sh "docker build -t $containerName:$tag --pull --no-cache ."
+        sh "docker build -t $containerName:${env.BUILD_NUMBER} --pull --no-cache ."
         echo "Image build complete"
     }
 
