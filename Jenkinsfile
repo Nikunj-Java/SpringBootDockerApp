@@ -4,9 +4,9 @@ def dockerHubUser="nikunj0510"
 def gitURL="https://github.com/Nikunj-Java/SpringBootDockerApp.git"
 
 node {
-	def sonarscanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-    stage('Checkout') {
-        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: gitURL]]]
+	 
+    stage('Checkout Source Code') {
+        checkout scm
     }
 
     stage('Build'){
@@ -22,22 +22,17 @@ node {
         echo "Image build complete"
     }
 
-    stage('Push to Docker Registry'){
-        withCredentials([usernamePassword(credentialsId: 'dockerHubAccount', usernameVariable: 'dockerUser', passwordVariable: 'dockerPassword')]) {
-            sh "docker login -u $dockerUser -p $dockerPassword"
-            sh "docker tag $containerName:$tag $dockerUser/$containerName:$tag"
-            sh "docker push $dockerUser/$containerName:$tag"
-            echo "Image push complete"
-        }
+    stage ('Run Application') {
+    try {
+      // Stop existing Container
+      sh 'docker rm docker_container -f'
+      // Start database container here
+      sh "docker run -d --name docker_container $containerName:$tag"
+    } 
+	catch (error) {
+    } finally {
+      // Stop and remove database container here
+      
     }
-	
-	stage("SonarQube Scan"){
-        withSonarQubeEnv(credentialsId: 'SonarQubeToken') {
-			sh "${sonarscanner}/bin/sonar-scanner"
-		}
-    }
-	
-	stage("Ansible Deploy"){
-        ansiblePlaybook inventory: 'hosts', playbook: 'deploy.yaml'
-    }
+  }
 }
