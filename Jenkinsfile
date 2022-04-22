@@ -26,14 +26,19 @@ node {
         echo "Image build complete"
     }
 
-    stage('Push to Docker Registry'){
-        withCredentials([usernamePassword(credentialsId: 'nikunj0510', usernameVariable: 'nikunj0510', passwordVariable: 'Nikunj@1412')]) {
-            sh "docker login -u $dockerUser -p $dockerPassword"
-            sh "docker tag $containerName:$tag $dockerUser/$containerName:$tag"
-            sh "docker push $dockerUser/$containerName:$tag"
-            echo "Image push complete"
-        }
+   stage ('Run Application') {
+    try {
+      // Stop existing Container
+      sh 'docker rm docker_container -f'
+      // Start database container here
+      sh "docker run -d --name docker_container $containerName:${env.BUILD_NUMBER}"
+    } 
+	catch (error) {
+    } finally {
+      // Stop and remove database container here
+      
     }
+  }
 	
 	stage("SonarQube Scan"){
         withSonarQubeEnv(credentialsId: 'SonarQubeToken') {
