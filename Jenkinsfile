@@ -13,21 +13,17 @@ node {
         sh "mvn clean install"
     }
 
-    stage("Image Prune"){
-         sh "docker image prune -f"
-    }
-
-    stage('Image Build'){
-        sh "docker build -t $containerName:${env.BUILD_NUMBER} --pull --no-cache ."
+    stage('Create Docker Image') {
+        docker.build("$containerName:${env.BUILD_NUMBER}")
         echo "Image build complete"
     }
-
+      
     stage ('Run Application') {
     try {
       // Stop existing Container
       sh 'docker rm docker_container -f'
       // Start database container here
-      sh "docker run -d --name docker_container $containerName:$tag"
+      sh "docker run -d --name docker_container $containerName:${env.BUILD_NUMBER}"
     } 
 	catch (error) {
     } finally {
