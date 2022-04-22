@@ -25,9 +25,9 @@ node {
     stage ('Run Application') {
     try {
       // Stop existing Container
-      sh 'docker rm docker_container -f'
+      sh 'docker rm $containerName -f'
       // Start database container here
-      sh "docker run -d --name docker_container docker_image:${env.BUILD_NUMBER}"
+      sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
     } 
 	catch (error) {
     } finally {
