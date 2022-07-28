@@ -20,7 +20,6 @@ node {
         sh "docker build -t $containerName:${env.BUILD_NUMBER} --pull --no-cache ."
         echo "Image build complete"
     }
-   
     stage ('Run Application') {
     try {
       // Stop existing Container
@@ -36,12 +35,6 @@ node {
   }
 
 
-  stage('Docker Swarm'){
-       sh "docker swarm init"
-
-        sh "docker service create  -p 8082:80 --name myservice $containerName:${env.BUILD_NUMBER}"
-        echo "Docker Swarm Initiated"
-    }
 
      
 	
