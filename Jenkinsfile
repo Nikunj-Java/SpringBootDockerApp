@@ -1,5 +1,5 @@
 def containerName="springbootdocker"
-//def tag="latest"
+def tag="latest"
  
 node {
 	 
@@ -21,10 +21,10 @@ node {
         echo "Image build complete"
     }
    
-     stage ('Run Application') {
+    stage ('Run Application') {
     try {
       // Stop existing Container
-      sh 'docker rm docker_container -f'
+       //sh 'docker rm $containerName -f'
       // Start database container here
       sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
     } 
@@ -33,15 +33,16 @@ node {
       // Stop and remove database container here
       
     }
-  }
-
-
-  stage('Docker Swarm'){
+stage('Docker Swarm'){
        sh "docker swarm init"
 
         sh "docker service create  -p 8082:80 --name myservice $containerName:${env.BUILD_NUMBER}"
         echo "Docker Swarm Initiated"
     }
+  }
+
+
+  
 
      
 	
