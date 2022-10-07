@@ -1,5 +1,5 @@
 def containerName="springbootdocker"
-def tag="latest"
+//def tag="latest"
  
 node {
 	 
