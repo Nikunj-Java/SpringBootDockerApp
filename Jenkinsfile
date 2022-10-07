@@ -1,8 +1,6 @@
 def containerName="springbootdocker"
-def tag="latest"
-def dockerHubUser="anujsharma1990"
-def gitURL="https://github.com/anujdevopslearn/SpringBootDocker.git"
-
+//def tag="latest"
+ 
 node {
 	 
     
@@ -10,7 +8,7 @@ node {
     checkout scm
   }
 
-    stage('Build'){
+     stage('Build'){
         sh "mvn clean install"
     }
 
@@ -19,16 +17,14 @@ node {
     }
 
     stage('Image Build'){
-        sh "docker build -t $containerName:$tag --pull --no-cache ."
+        sh "docker build -t $containerName:${env.BUILD_NUMBER} --pull --no-cache ."
         echo "Image build complete"
     }
-
-    
-
-  stage ('Run Application') {
+   
+     stage ('Run Application') {
     try {
       // Stop existing Container
-      sh 'docker rm $containerName -f'
+      sh 'docker rm docker_container -f'
       // Start database container here
       sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
     } 
@@ -38,6 +34,14 @@ node {
       
     }
   }
+
+
+  stage('Docker Swarm'){
+       sh "docker swarm init"
+
+        sh "docker service create  -p 8082:80 --name myservice $containerName:${env.BUILD_NUMBER}"
+        echo "Docker Swarm Initiated"
+    }
 
      
 	
