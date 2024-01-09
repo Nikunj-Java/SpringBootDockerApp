@@ -1,4 +1,4 @@
-FROM openJdk:11
+FROM openjdk:11
 
 COPY ./target/demo-docker*.jar /usr/app/dockerDemo.jar
 
