@@ -8,8 +8,12 @@ node {
     checkout scm
   }
 
-     stage('Build'){
-        sh "mvn clean install"
+     stage('Maven Clean'){
+        sh "mvn clean"
+    }
+
+	stage('Maven Install'){
+        sh "mvn install"
     }
 
     stage("Image Prune"){
