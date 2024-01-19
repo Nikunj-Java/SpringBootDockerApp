@@ -37,7 +37,7 @@ stage('Docker HUB'){
   }
 
 
-  
+    }
 
      
 	
