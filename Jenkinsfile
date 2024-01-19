@@ -1,6 +1,6 @@
-def containerName="springbootdocker"
+def containerName="spring_container"
+def imageName="spring_image"
 def tag="latest"
- 
 node {
 	 
     
@@ -22,7 +22,7 @@ node {
 	      // Stop existing Container
 	       //sh 'docker rm $containerName -f'
 	      // Start database container here
-	      sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
+	      sh "docker run -d --name $containerName-${env.BUILD_NUMBER} -p 8082:8082 $imageName:${env.BUILD_NUMBER}"
 	    } 
 	   catch (error) {
 	    } finally {
