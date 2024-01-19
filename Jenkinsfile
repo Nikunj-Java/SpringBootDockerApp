@@ -30,7 +30,7 @@ node {
       
     }
 stage('Docker HUB'){
-       sh "docker swarm init"
+       sh "docker login"
 
        sh "docker push nikunj0510/docker_image:${env.BUILD_NUMBER}"
 
