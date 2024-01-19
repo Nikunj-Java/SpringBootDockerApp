@@ -8,18 +8,10 @@ node {
     checkout scm
   }
 
-     stage('Maven Clean'){
-        sh "mvn clean"
-    }
-
-	stage('Maven Install'){
-        sh "mvn install"
-    }
-
-    stage("Image Prune"){
-         sh "docker image prune -f"
-    }
-
+   stage("Compilation") {
+    sh "./mvnw clean install -DskipTests"
+   }
+ 
     stage('Image Build'){
         sh "docker build -t $containerName:${env.BUILD_NUMBER} --pull --no-cache ."
         echo "Image build complete"
