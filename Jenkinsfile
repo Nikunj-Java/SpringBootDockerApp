@@ -9,7 +9,7 @@ node {
   }
 
    stage("Compilation") {
-    sh "./mvnw clean install -DskipTests"
+    sh "mvn clean install -DskipTests"
    }
  
     stage('Image Build'){
