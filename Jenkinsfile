@@ -29,12 +29,11 @@ node {
       // Stop and remove database container here
       
     }
-stage('Docker Swarm'){
+stage('Docker HUB'){
        sh "docker swarm init"
 
-        sh "docker service create  -p 8082:80 --name myservice $containerName:${env.BUILD_NUMBER}"
-        echo "Docker Swarm Initiated"
-    }
+       sh "docker push nikunj0510/docker_image:${env.BUILD_NUMBER}"
+
   }
 
 
