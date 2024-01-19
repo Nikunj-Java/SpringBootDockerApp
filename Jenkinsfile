@@ -18,27 +18,20 @@ node {
     }
    
     stage ('Run Application') {
-    try {
-      // Stop existing Container
-       //sh 'docker rm $containerName -f'
-      // Start database container here
-      sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
-    } 
-	catch (error) {
-    } finally {
-      // Stop and remove database container here
-      
-    }
-stage('Docker HUB'){
-       sh "docker login"
-
-       sh "docker push nikunj0510/$containerName:${env.BUILD_NUMBER}"
-
-  }
-
-
+	    try {
+	      // Stop existing Container
+	       //sh 'docker rm $containerName -f'
+	      // Start database container here
+	      sh "docker run -d --name $containerName $containerName:${env.BUILD_NUMBER}"
+	    } 
+	   catch (error) {
+	    } finally {
+	      // Stop and remove database container here
+	      
+	    }
     }
 
+ 
      
 	
  
