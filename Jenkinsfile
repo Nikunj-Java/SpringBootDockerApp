@@ -32,7 +32,7 @@ node {
 stage('Docker HUB'){
        sh "docker login"
 
-       sh "docker push nikunj0510/docker_image:${env.BUILD_NUMBER}"
+       sh "docker push nikunj0510/$containerName:${env.BUILD_NUMBER}"
 
   }
 
