@@ -13,7 +13,7 @@ node {
    }
  
     stage('Image Build'){
-        sh "docker build -t $containerName:${env.BUILD_NUMBER} --pull --no-cache ."
+        sh "docker build -t $imageName:${env.BUILD_NUMBER} --pull --no-cache ."
         echo "Image build complete"
     }
    
@@ -23,6 +23,7 @@ node {
 	       //sh 'docker rm $containerName-${env.BUILD_NUMBER} -f'
 	      // Start database container here
 	      sh "docker run -d --name $containerName -p 8082:8082 $imageName:${env.BUILD_NUMBER}"
+	     // sudo docker run -d --name mycontainer-${env.BUILD_NUMBER} -p 8082:8082 spring_container:5
 	    } 
 	   catch (error) {
 	    } finally {
